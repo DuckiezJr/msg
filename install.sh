@@ -1,3 +1,5 @@
+cat << 'EOF' > $PREFIX/bin/install
+#!/data/data/com.termux/files/usr/bin/bash
 pkg update -y && pkg upgrade -y
 pkg install -y nodejs cloudflared git
 termux-wake-lock
@@ -5,7 +7,7 @@ termux-wake-lock
 mkdir -p ~/msg-server/public
 cd ~/msg-server
 
-cat << 'EOF' > package.json
+cat << 'INNER_EOF' > package.json
 {
   "name": "termux-msg-server",
   "version": "1.0.0",
@@ -18,11 +20,11 @@ cat << 'EOF' > package.json
     "socket.io": "^4.7.5"
   }
 }
-EOF
+INNER_EOF
 
 npm install
 
-cat << 'EOF' > auth.js
+cat << 'INNER_EOF' > auth.js
 const activeUsers = new Map();
 const socketToId = new Map();
 
@@ -65,9 +67,9 @@ function getIdBySocket(socketId) {
 }
 
 module.exports = { registerUser, removeUserBySocket, getUserById, getIdBySocket };
-EOF
+INNER_EOF
 
-cat << 'EOF' > profile.js
+cat << 'INNER_EOF' > profile.js
 function sanitizePublicProfile(rawProfile = {}) {
     const toggles = rawProfile.toggles || {};
     return {
@@ -87,9 +89,9 @@ function sanitizePublicProfile(rawProfile = {}) {
 }
 
 module.exports = { sanitizePublicProfile };
-EOF
+INNER_EOF
 
-cat << 'EOF' > messages.js
+cat << 'INNER_EOF' > messages.js
 const auth = require('./auth');
 const { sanitizePublicProfile } = require('./profile');
 
@@ -164,9 +166,9 @@ function attachSocketHandlers(io) {
 }
 
 module.exports = { attachSocketHandlers };
-EOF
+INNER_EOF
 
-cat << 'EOF' > server.js
+cat << 'INNER_EOF' > server.js
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -194,14 +196,17 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`[Server] Running on http://localhost:${PORT}`);
 });
-EOF
+INNER_EOF
 
-cat << 'EOF' > start.sh
+cat << 'INNER_EOF' > $PREFIX/bin/start
 #!/data/data/com.termux/files/usr/bin/bash
 termux-wake-lock
+cd ~/msg-server
 node server.js &
 cloudflared tunnel --url http://localhost:3000
-EOF
-chmod +x start.sh
+INNER_EOF
+chmod +x $PREFIX/bin/start
 
-echo "Setup complete! Run ./start.sh inside ~/msg-server to launch the server and Cloudflare Tunnel."
+echo "Install complete! Type 'start' anywhere in Termux to launch your server."
+EOF
+chmod +x $PREFIX/bin/install && install
