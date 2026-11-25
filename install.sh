@@ -1,7 +1,6 @@
 cd ~
-rm -rf msg-server
-mkdir -p msg-server/public
-cd msg-server
+mkdir -p ~/msg-server/public
+cd ~/msg-server
 
 cat << 'EOF' > package.json
 {
@@ -194,7 +193,7 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 EOF
 
-# Create a clean startup script and alias it in bashrc so 'start' works from anywhere
+# Create the startup script (start.sh) inside the folder
 cat << 'EOF' > start.sh
 #!/data/data/com.termux/files/usr/bin/bash
 termux-wake-lock
@@ -204,9 +203,4 @@ cloudflared tunnel --url http://localhost:3000
 EOF
 chmod +x start.sh
 
-# Add an alias to .bashrc so typing 'start' works anywhere
-if ! grep -q "alias start=" ~/.bashrc; then
-    echo "alias start='~/msg-server/start.sh'" >> ~/.bashrc
-fi
-
-echo "Installation successfully fixed! Type 'source ~/.bashrc' once, and then type 'start' anytime to run your server."
+echo "install.sh finished successfully! To run your server anytime, just type: cd ~/msg-server && ./start.sh"
