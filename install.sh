@@ -1,13 +1,9 @@
-cat << 'EOF' > $PREFIX/bin/install
-#!/data/data/com.termux/files/usr/bin/bash
-pkg update -y && pkg upgrade -y
-pkg install -y nodejs cloudflared git
-termux-wake-lock
+cd ~
+rm -rf msg-server
+mkdir -p msg-server/public
+cd msg-server
 
-mkdir -p ~/msg-server/public
-cd ~/msg-server
-
-cat << 'INNER_EOF' > package.json
+cat << 'EOF' > package.json
 {
   "name": "termux-msg-server",
   "version": "1.0.0",
@@ -20,11 +16,11 @@ cat << 'INNER_EOF' > package.json
     "socket.io": "^4.7.5"
   }
 }
-INNER_EOF
+EOF
 
 npm install
 
-cat << 'INNER_EOF' > auth.js
+cat << 'EOF' > auth.js
 const activeUsers = new Map();
 const socketToId = new Map();
 
@@ -67,9 +63,9 @@ function getIdBySocket(socketId) {
 }
 
 module.exports = { registerUser, removeUserBySocket, getUserById, getIdBySocket };
-INNER_EOF
+EOF
 
-cat << 'INNER_EOF' > profile.js
+cat << 'EOF' > profile.js
 function sanitizePublicProfile(rawProfile = {}) {
     const toggles = rawProfile.toggles || {};
     return {
@@ -89,9 +85,9 @@ function sanitizePublicProfile(rawProfile = {}) {
 }
 
 module.exports = { sanitizePublicProfile };
-INNER_EOF
+EOF
 
-cat << 'INNER_EOF' > messages.js
+cat << 'EOF' > messages.js
 const auth = require('./auth');
 const { sanitizePublicProfile } = require('./profile');
 
@@ -166,9 +162,9 @@ function attachSocketHandlers(io) {
 }
 
 module.exports = { attachSocketHandlers };
-INNER_EOF
+EOF
 
-cat << 'INNER_EOF' > server.js
+cat << 'EOF' > server.js
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -196,17 +192,21 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`[Server] Running on http://localhost:${PORT}`);
 });
-INNER_EOF
+EOF
 
-cat << 'INNER_EOF' > $PREFIX/bin/start
+# Create a clean startup script and alias it in bashrc so 'start' works from anywhere
+cat << 'EOF' > start.sh
 #!/data/data/com.termux/files/usr/bin/bash
 termux-wake-lock
 cd ~/msg-server
 node server.js &
 cloudflared tunnel --url http://localhost:3000
-INNER_EOF
-chmod +x $PREFIX/bin/start
-
-echo "Install complete! Type 'start' anywhere in Termux to launch your server."
 EOF
-chmod +x $PREFIX/bin/install && install
+chmod +x start.sh
+
+# Add an alias to .bashrc so typing 'start' works anywhere
+if ! grep -q "alias start=" ~/.bashrc; then
+    echo "alias start='~/msg-server/start.sh'" >> ~/.bashrc
+fi
+
+echo "Installation successfully fixed! Type 'source ~/.bashrc' once, and then type 'start' anytime to run your server."
