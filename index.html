@@ -1,0 +1,1001 @@
+<!-- Toast Notification Banner -->
+<div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+<!-- Main App Viewport Container -->
+<div id="appContainer" class="flex-1 flex h-full relative overflow-hidden">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="mobileSidebarBackdrop" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden backdrop-blur-sm"></div>
+
+    <!-- CONTACTS SIDEBAR -->
+    <aside id="contactsSidebar" class="absolute md:relative inset-y-0 left-0 z-30 w-80 bg-[#0B0F17] border-r border-[#1E293B] flex flex-col transition-transform duration-200 ease-in-out -translate-x-full md:translate-x-0">
+        
+        <!-- Sidebar Top Header -->
+        <div class="h-14 border-b border-[#1E293B] flex items-center px-4 justify-between bg-[#0B0F17] flex-shrink-0">
+            <span class="font-semibold text-sm tracking-wide text-slate-200">Friends</span>
+            <button id="btnToggleAddFriend" title="Add Friend" class="w-8 h-8 bg-[#111827] border border-[#1E293B] text-slate-300 hover:text-white flex items-center justify-center font-bold text-base transition-colors">
+                +
+            </button>
+        </div>
+
+        <!-- Add Friend Input Bar (Toggled via + button) -->
+        <div id="addFriendWrapper" class="hidden border-b border-[#1E293B] bg-[#0B0F17] p-3 flex-shrink-0">
+            <form id="addFriendForm" class="flex flex-col space-y-2">
+                <div class="text-xs text-slate-400 font-medium">Add Friend by 6-Character ID</div>
+                <div class="flex space-x-2">
+                    <input type="text" id="addFriendInput" maxlength="6" placeholder="Enter 6-char ID" class="flex-1 bg-[#111827] border border-[#1E293B] px-3 py-1.5 text-xs text-white uppercase placeholder:text-slate-600 focus:outline-none focus:border-slate-500 font-mono">
+                    <button type="submit" class="bg-[#111827] border border-[#1E293B] hover:bg-slate-800 text-slate-200 px-3 py-1.5 text-xs font-semibold transition-colors">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Friend List Container -->
+        <div id="friendsListContainer" class="flex-1 overflow-y-auto p-2 space-y-1">
+            <!-- Dynamically rendered friend items -->
+        </div>
+
+        <!-- BOTTOM USER PROFILE DOCK -->
+        <div id="userProfileDock" class="h-16 border-t border-[#1E293B] banner-bg px-3 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center space-x-2.5 overflow-hidden">
+                <!-- Collapse Toggle Button placed right next to avatar/name -->
+                <button id="btnSidebarCollapse" title="Toggle Sidebar" class="w-8 h-8 bg-[#111827] border border-[#1E293B] text-slate-300 hover:text-white flex items-center justify-center font-mono text-sm transition-colors flex-shrink-0">
+                    <span id="sidebarToggleIcon">&lt;</span>
+                </button>
+
+                <!-- Profile Clickable Area to Copy ID -->
+                <div class="flex items-center space-x-2.5 overflow-hidden cursor-pointer group" id="btnCopyOwnId" title="Click to copy your 6-digit ID">
+                    <div class="relative w-9 h-9 bg-slate-800 border border-[#1E293B] flex-shrink-0 overflow-hidden">
+                        <img id="dockAvatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                        <div id="dockAvatarFallback" class="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
+                            <svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-[#0B0F17]"></span>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <span id="dockUsername" class="text-xs font-semibold text-slate-200 truncate group-hover:underline">User</span>
+                        <span id="dockId6" class="text-[10px] text-slate-300 font-mono">#------</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <button id="btnDockSettings" title="Edit Profile & Appearance" class="w-9 h-9 bg-[#111827] border border-[#1E293B] text-slate-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- CHAT MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col bg-[#0B0F17] relative overflow-hidden">
+        
+        <!-- Chat Top Header Bar -->
+        <header class="h-14 border-b border-[#1E293B] bg-[#0B0F17] px-4 flex items-center justify-between flex-shrink-0 z-10">
+            <div class="flex items-center space-x-3">
+                <div id="headerPeerTrigger" class="flex items-center space-x-3 cursor-pointer group">
+                    <div class="relative w-8 h-8 bg-slate-800 border border-[#1E293B] flex-shrink-0 overflow-hidden">
+                        <img id="headerAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                        <div id="headerAvatarFallback" class="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">?</div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center space-x-2">
+                            <span id="headerPeerName" class="text-sm font-semibold text-slate-200 group-hover:underline">Select a friend</span>
+                            <span id="headerOnlineDot" class="w-2 h-2 rounded-full bg-slate-600 hidden"></span>
+                        </div>
+                        <span id="headerPeerId" class="text-[10px] text-slate-400 font-mono">#------</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div id="headerPeerBadge" class="text-xs font-mono px-2 py-1 bg-[#111827] border border-[#1E293B] text-slate-400">
+                    No Peer Selected
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Transcript Stream -->
+        <div id="chatTranscript" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+            <div class="my-auto text-center text-slate-500 text-sm">
+                Select a friend from the sidebar or add a new one to start messaging.
+            </div>
+        </div>
+
+        <!-- Attachment Preview Bar -->
+        <div id="attachmentPreviewBar" class="hidden px-4 py-2 bg-[#111827] border-t border-[#1E293B] flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center space-x-3">
+                <img id="attachmentPreviewImg" src="" alt="Preview" class="w-12 h-12 object-cover border border-[#1E293B]">
+                <span class="text-xs text-slate-300 font-mono">Attached Media Ready</span>
+            </div>
+            <button id="btnRemoveAttachment" class="text-xs text-red-400 hover:text-red-300 px-2 py-1">Remove</button>
+        </div>
+
+        <!-- Chat Input Footer Bar -->
+        <footer class="h-16 border-t border-[#1E293B] bg-[#0B0F17] px-4 flex items-center flex-shrink-0">
+            <form id="messageForm" class="flex-1 flex items-center space-x-3">
+                <!-- Attachment Upload Trigger Button -->
+                <label class="w-9 h-9 bg-[#111827] border border-[#1E293B] text-slate-300 hover:text-white flex items-center justify-center cursor-pointer transition-colors flex-shrink-0" title="Attach Image / GIF">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <input type="file" id="chatMediaInput" accept="image/*" class="hidden">
+                </label>
+
+                <input type="text" id="messageInput" disabled placeholder="Select a friend to start chatting..." class="flex-1 bg-[#111827] border border-[#1E293B] px-4 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-500 font-mono">
+
+                <button type="submit" id="sendMessageBtn" disabled class="accent-bg text-white px-5 py-2.5 text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
+                    Send
+                </button>
+            </form>
+        </footer>
+    </main>
+</div>
+
+<!-- FRIEND CONTEXT MENU -->
+<div id="contextMenu" class="fixed hidden z-50 w-48 bg-[#111827] border border-[#1E293B] shadow-2xl py-1 text-xs">
+    <button id="ctxCopyId" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-slate-200">Copy ID</button>
+    <button id="ctxViewProfile" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-slate-200">Check ID / Profile</button>
+    <div class="border-t border-[#1E293B] my-1"></div>
+    <button id="ctxRemoveFriend" class="w-full text-left px-4 py-2 hover:bg-slate-800 text-red-400">Remove Friend</button>
+</div>
+
+<!-- FRIEND PROFILE MODAL -->
+<div id="friendProfileModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-[#111827] border border-[#1E293B] w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
+        <div id="fpBanner" class="h-28 w-full bg-slate-800 relative bg-cover bg-center">
+            <button id="closeFpModal" class="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white flex items-center justify-center text-xs hover:bg-black">×</button>
+        </div>
+        <div class="px-5 pb-5 pt-0 relative flex flex-col">
+            <div class="-mt-10 mb-3 relative w-16 h-16 bg-slate-900 border-2 border-[#111827] overflow-hidden flex-shrink-0">
+                <img id="fpAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                <div id="fpAvatarFallback" class="w-full h-full flex items-center justify-center font-bold text-slate-400">?</div>
+            </div>
+            <h3 id="fpUsername" class="text-base font-bold text-white">Username</h3>
+            <p id="fpId6" class="text-xs text-slate-400 font-mono mb-4">#------</p>
+            <div class="border-t border-[#1E293B] pt-3 flex justify-end">
+                <button id="fpCloseBtn" class="bg-[#0B0F17] border border-[#1E293B] px-4 py-1.5 text-xs text-slate-200 hover:bg-slate-800">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ACCOUNT SETUP & APPEARANCE SETTINGS MODAL -->
+<div id="accountModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-[#111827] border border-[#1E293B] w-full max-w-md overflow-hidden flex flex-col shadow-2xl">
+        <div class="px-5 py-4 border-b border-[#1E293B] flex items-center justify-between">
+            <h2 id="accountModalTitle" class="text-sm font-bold text-white tracking-wide">Edit Profile & Appearance</h2>
+            <button id="closeAccountModalBtn" class="text-slate-400 hover:text-white text-sm font-mono">×</button>
+        </div>
+
+        <div class="p-5 overflow-y-auto max-h-[80vh] space-y-5">
+            <!-- Live Profile Card Preview -->
+            <div class="bg-[#0B0F17] border border-[#1E293B] overflow-hidden">
+                <div id="previewBanner" class="h-24 w-full bg-slate-800 bg-cover bg-center relative"></div>
+                <div class="px-4 pb-4 pt-0 relative flex flex-col">
+                    <div class="-mt-8 mb-2 relative w-14 h-14 bg-slate-900 border-2 border-[#0B0F17] overflow-hidden flex-shrink-0">
+                        <img id="previewAvatarImg" src="" alt="" class="w-full h-full object-cover hidden">
+                        <div id="previewAvatarFallback" class="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">?</div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 id="previewUsername" class="text-sm font-bold text-white">Your Name</h4>
+                            <span id="previewId6" class="text-[10px] text-slate-400 font-mono">#------</span>
+                        </div>
+                        <div id="previewAccentIndicator" class="w-4 h-4 accent-bg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="accountForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Username (2-24 chars)</label>
+                    <input type="text" id="inputUsername" minlength="2" maxlength="24" required placeholder="Enter your display name" class="w-full bg-[#0B0F17] border border-[#1E293B] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-500 font-mono">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-medium text-slate-300">Custom 6-Character ID</label>
+                        <button type="button" id="btnRandomizeId" class="text-[10px] text-slate-400 hover:text-white underline">Randomize</button>
+                    </div>
+                    <input type="text" id="inputId6" maxlength="6" required placeholder="A1B2C3" class="w-full bg-[#0B0F17] border border-[#1E293B] px-3 py-2 text-xs text-white uppercase placeholder:text-slate-600 focus:outline-none focus:border-slate-500 font-mono">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Banner Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="inputBannerColor" value="#1E293B" class="w-10 h-8 bg-transparent cursor-pointer border border-[#1E293B]">
+                            <span class="text-[11px] text-slate-400 font-mono">Dock & preview</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Accent / Favorite Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="inputAccentColor" value="#3B82F6" class="w-10 h-8 bg-transparent cursor-pointer border border-[#1E293B]">
+                            <span class="text-[11px] text-slate-400 font-mono">Buttons & outlines</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-2 border-t border-[#1E293B]">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Choose Avatar Image</label>
+                        <input type="file" id="inputAvatarFile" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:border file:border-[#1E293B] file:bg-[#0B0F17] file:text-slate-200 hover:file:bg-slate-800 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Choose Banner Image</label>
+                        <input type="file" id="inputBannerFile" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:border file:border-[#1E293B] file:bg-[#0B0F17] file:text-slate-200 hover:file:bg-slate-800 cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-[#1E293B] flex justify-end">
+                    <button type="submit" id="btnSaveAccount" class="accent-bg text-white px-5 py-2 text-xs font-semibold hover:opacity-90 transition-opacity">
+                        Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Application Script Engine -->
+<script>
+    (function() {
+        const STORAGE_KEY_PROFILE = 'termux_msg_profile_v2';
+        const STORAGE_KEY_FRIENDS = 'termux_msg_friends_v2';
+        const STORAGE_KEY_CHATS = 'termux_msg_chats_v2';
+
+        let state = {
+            profile: null,
+            friends: [],
+            chats: {},
+            activeFriendId: null
+        };
+
+        let isSidebarCollapsed = false;
+        let isAddFriendOpen = false;
+        let contextTargetFriendId = null;
+        let pendingMediaDataUrl = null;
+        let draftAvatarUrl = '';
+        let draftBannerUrl = '';
+
+        const els = {
+            appContainer: document.getElementById('appContainer'),
+            contactsSidebar: document.getElementById('contactsSidebar'),
+            mobileSidebarBackdrop: document.getElementById('mobileSidebarBackdrop'),
+            btnSidebarCollapse: document.getElementById('btnSidebarCollapse'),
+            sidebarToggleIcon: document.getElementById('sidebarToggleIcon'),
+            btnToggleAddFriend: document.getElementById('btnToggleAddFriend'),
+            addFriendWrapper: document.getElementById('addFriendWrapper'),
+            addFriendForm: document.getElementById('addFriendForm'),
+            addFriendInput: document.getElementById('addFriendInput'),
+            friendsListContainer: document.getElementById('friendsListContainer'),
+            userProfileDock: document.getElementById('userProfileDock'),
+            dockAvatarImg: document.getElementById('dockAvatarImg'),
+            dockAvatarFallback: document.getElementById('dockAvatarFallback'),
+            dockUsername: document.getElementById('dockUsername'),
+            dockId6: document.getElementById('dockId6'),
+            btnCopyOwnId: document.getElementById('btnCopyOwnId'),
+            btnDockSettings: document.getElementById('btnDockSettings'),
+            headerPeerTrigger: document.getElementById('headerPeerTrigger'),
+            headerAvatarImg: document.getElementById('headerAvatarImg'),
+            headerAvatarFallback: document.getElementById('headerAvatarFallback'),
+            headerPeerName: document.getElementById('headerPeerName'),
+            headerOnlineDot: document.getElementById('headerOnlineDot'),
+            headerPeerId: document.getElementById('headerPeerId'),
+            headerPeerBadge: document.getElementById('headerPeerBadge'),
+            chatTranscript: document.getElementById('chatTranscript'),
+            attachmentPreviewBar: document.getElementById('attachmentPreviewBar'),
+            attachmentPreviewImg: document.getElementById('attachmentPreviewImg'),
+            btnRemoveAttachment: document.getElementById('btnRemoveAttachment'),
+            messageForm: document.getElementById('messageForm'),
+            messageInput: document.getElementById('messageInput'),
+            sendMessageBtn: document.getElementById('sendMessageBtn'),
+            chatMediaInput: document.getElementById('chatMediaInput'),
+            contextMenu: document.getElementById('contextMenu'),
+            ctxCopyId: document.getElementById('ctxCopyId'),
+            ctxViewProfile: document.getElementById('ctxViewProfile'),
+            ctxRemoveFriend: document.getElementById('ctxRemoveFriend'),
+            friendProfileModal: document.getElementById('friendProfileModal'),
+            fpBanner: document.getElementById('fpBanner'),
+            closeFpModal: document.getElementById('closeFpModal'),
+            fpAvatarImg: document.getElementById('fpAvatarImg'),
+            fpAvatarFallback: document.getElementById('fpAvatarFallback'),
+            fpUsername: document.getElementById('fpUsername'),
+            fpId6: document.getElementById('fpId6'),
+            fpCloseBtn: document.getElementById('fpCloseBtn'),
+            accountModal: document.getElementById('accountModal'),
+            accountModalTitle: document.getElementById('accountModalTitle'),
+            closeAccountModalBtn: document.getElementById('closeAccountModalBtn'),
+            previewBanner: document.getElementById('previewBanner'),
+            previewAvatarImg: document.getElementById('previewAvatarImg'),
+            previewAvatarFallback: document.getElementById('previewAvatarFallback'),
+            previewUsername: document.getElementById('previewUsername'),
+            previewId6: document.getElementById('previewId6'),
+            previewAccentIndicator: document.getElementById('previewAccentIndicator'),
+            accountForm: document.getElementById('accountForm'),
+            inputUsername: document.getElementById('inputUsername'),
+            inputId6: document.getElementById('inputId6'),
+            btnRandomizeId: document.getElementById('btnRandomizeId'),
+            inputBannerColor: document.getElementById('inputBannerColor'),
+            inputAccentColor: document.getElementById('inputAccentColor'),
+            inputAvatarFile: document.getElementById('inputAvatarFile'),
+            inputBannerFile: document.getElementById('inputBannerFile'),
+            btnSaveAccount: document.getElementById('btnSaveAccount'),
+            toastContainer: document.getElementById('toastContainer')
+        };
+
+        function generateRandomId6() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let res = '';
+            for (let i = 0; i < 6; i++) {
+                res += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return res;
+        }
+
+        function showToast(message, isError = false) {
+            if (!els.toastContainer) return;
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-2 bg-[#111827] border ${isError ? 'border-red-500 text-red-300' : 'border-[#1E293B] text-slate-200'} text-xs shadow-xl font-mono`;
+            toast.textContent = message;
+            els.toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2400);
+        }
+
+        function copyToClipboard(text, successMsg = 'Copied to clipboard') {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(() => fallbackCopy(text, successMsg));
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+
+        function fallbackCopy(text, successMsg) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (err) {
+                showToast('Failed to copy', true);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function processUploadedImage(file, maxDimension = 300) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > height) {
+                            if (width > maxDimension) {
+                                height *= maxDimension / width;
+                                width = maxDimension;
+                            }
+                        } else {
+                            if (height > maxDimension) {
+                                width *= maxDimension / height;
+                                height = maxDimension;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.85));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function loadState() {
+            try {
+                const rawProfile = localStorage.getItem(STORAGE_KEY_PROFILE);
+                if (rawProfile) state.profile = JSON.parse(rawProfile);
+
+                const rawFriends = localStorage.getItem(STORAGE_KEY_FRIENDS);
+                if (rawFriends) state.friends = JSON.parse(rawFriends);
+
+                const rawChats = localStorage.getItem(STORAGE_KEY_CHATS);
+                if (rawChats) state.chats = JSON.parse(rawChats);
+            } catch (e) {
+                console.error('Error loading state', e);
+            }
+
+            if (!state.profile) {
+                state.profile = {
+                    username: 'TermuxUser',
+                    id6: generateRandomId6(),
+                    accentColor: '#3B82F6',
+                    bannerColor: '#1E293B',
+                    avatarUrl: '',
+                    bannerUrl: ''
+                };
+                saveState();
+                return false;
+            }
+            return true;
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(state.profile));
+                localStorage.setItem(STORAGE_KEY_FRIENDS, JSON.stringify(state.friends));
+                localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(state.chats));
+            } catch (e) {
+                console.error('Error saving state', e);
+            }
+        }
+
+        function applyUserTheme() {
+            if (!state.profile) return;
+            document.documentElement.style.setProperty('--user-accent', state.profile.accentColor || '#3B82F6');
+            document.documentElement.style.setProperty('--user-banner', state.profile.bannerColor || '#1E293B');
+        }
+
+        function renderUserDock() {
+            if (!state.profile) return;
+            applyUserTheme();
+
+            els.dockUsername.textContent = state.profile.username;
+            els.dockId6.textContent = `#${state.profile.id6}`;
+            
+            if (state.profile.avatarUrl) {
+                els.dockAvatarImg.src = state.profile.avatarUrl;
+                els.dockAvatarImg.classList.remove('hidden');
+                els.dockAvatarFallback.classList.add('hidden');
+            } else {
+                els.dockAvatarImg.classList.add('hidden');
+                els.dockAvatarFallback.classList.remove('hidden');
+            }
+        }
+
+        function renderFriendsList() {
+            els.friendsListContainer.innerHTML = '';
+            if (state.friends.length === 0) {
+                els.friendsListContainer.innerHTML = `
+                    <div class="p-4 text-center text-xs text-slate-500 font-mono">
+                        No friends added yet.<br>Click '+' to add by 6-char ID.
+                    </div>
+                `;
+                return;
+            }
+
+            state.friends.forEach(friend => {
+                const item = document.createElement('div');
+                const isActive = state.activeFriendId === friend.id6;
+                item.className = `flex items-center justify-between p-2.5 cursor-pointer transition-colors border ${isActive ? 'bg-[#111827] border-slate-700' : 'border-transparent hover:bg-[#111827]/50'}`;
+                
+                const outlineStyle = `style="border-color: ${friend.accentColor || '#3B82F6'};"`;
+                
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <div class="relative w-9 h-9 bg-slate-800 border-2 flex-shrink-0 overflow-hidden" ${outlineStyle}>
+                            ${friend.avatarUrl ? `<img src="${friend.avatarUrl}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">${friend.username.charAt(0).toUpperCase()}</div>`}
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ${friend.isOnline ? 'bg-emerald-500' : 'bg-slate-600'} border border-[#0B0F17]"></span>
+                        </div>
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-xs font-semibold text-slate-200 truncate">${friend.username}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">#${friend.id6}</span>
+                        </div>
+                    </div>
+                    <button class="text-slate-500 hover:text-slate-300 px-1 text-xs btn-friend-menu" data-id="${friend.id6}">⋮</button>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-friend-menu')) return;
+                    selectActiveFriend(friend.id6);
+                    if (window.innerWidth < 768) toggleMobileSidebar(false);
+                });
+
+                item.querySelector('.btn-friend-menu').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openContextMenu(e, friend.id6);
+                });
+
+                item.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    openContextMenu(e, friend.id6);
+                });
+
+                els.friendsListContainer.appendChild(item);
+            });
+        }
+
+        function selectActiveFriend(friendId) {
+            state.activeFriendId = friendId;
+            renderFriendsList();
+            renderActiveChat();
+        }
+
+        function getActiveFriend() {
+            if (!state.activeFriendId) return null;
+            return state.friends.find(f => f.id6 === state.activeFriendId) || null;
+        }
+
+        function renderActiveChat() {
+            const friend = getActiveFriend();
+            if (!friend) {
+                els.headerAvatarImg.classList.add('hidden');
+                els.headerAvatarFallback.classList.remove('hidden');
+                els.headerPeerName.textContent = 'Select a friend';
+                els.headerOnlineDot.classList.add('hidden');
+                els.headerPeerId.textContent = '#------';
+                els.headerPeerBadge.textContent = 'No Peer Selected';
+                
+                els.messageInput.disabled = true;
+                els.messageInput.placeholder = 'Select a friend to start chatting...';
+                els.sendMessageBtn.disabled = true;
+                
+                els.chatTranscript.innerHTML = `
+                    <div class="my-auto text-center text-slate-500 text-sm">
+                        Select a friend from the sidebar or add a new one to start messaging.
+                    </div>
+                `;
+                return;
+            }
+
+            if (friend.avatarUrl) {
+                els.headerAvatarImg.src = friend.avatarUrl;
+                els.headerAvatarImg.classList.remove('hidden');
+                els.headerAvatarFallback.classList.add('hidden');
+            } else {
+                els.headerAvatarImg.classList.add('hidden');
+                els.headerAvatarFallback.classList.remove('hidden');
+                els.headerAvatarFallback.textContent = friend.username.charAt(0).toUpperCase();
+            }
+
+            els.headerPeerName.textContent = friend.username;
+            els.headerOnlineDot.classList.remove('hidden');
+            els.headerOnlineDot.className = `w-2 h-2 rounded-full ${friend.isOnline ? 'bg-emerald-500' : 'bg-slate-600'}`;
+            els.headerPeerId.textContent = `#${friend.id6}`;
+            els.headerPeerBadge.textContent = friend.isOnline ? 'ONLINE' : 'OFFLINE';
+
+            els.messageInput.disabled = false;
+            els.messageInput.placeholder = `Message #${friend.username}...`;
+            els.sendMessageBtn.disabled = false;
+
+            renderTranscriptMessages(friend.id6);
+        }
+
+        function renderTranscriptMessages(friendId) {
+            const messages = state.chats[friendId] || [];
+            els.chatTranscript.innerHTML = '';
+
+            if (messages.length === 0) {
+                els.chatTranscript.innerHTML = `
+                    <div class="my-auto text-center text-slate-500 text-sm font-mono">
+                        Say hello to #${friendId}!
+                    </div>
+                `;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isSelf = msg.senderId === state.profile.id6;
+                const senderObj = isSelf ? state.profile : getActiveFriend();
+                const senderName = isSelf ? state.profile.username : (senderObj ? senderObj.username : 'Peer');
+                const avatarUrl = isSelf ? state.profile.avatarUrl : (senderObj ? senderObj.avatarUrl : '');
+
+                const row = document.createElement('div');
+                row.className = `flex space-x-3 items-start ${isSelf ? 'flex-row-reverse space-x-reverse' : ''}`;
+
+                const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                row.innerHTML = `
+                    <div class="w-8 h-8 bg-slate-800 border border-[#1E293B] flex-shrink-0 overflow-hidden">
+                        ${avatarUrl ? `<img src="${avatarUrl}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">${senderName.charAt(0).toUpperCase()}</div>`}
+                    </div>
+                    <div class="flex flex-col max-w-lg ${isSelf ? 'items-end' : ''}">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="text-xs font-semibold text-slate-300">${senderName}</span>
+                            <span class="text-[10px] text-slate-500 font-mono">${timeStr}</span>
+                        </div>
+                        <div class="bg-[#111827] border border-[#1E293B] p-3 text-xs text-slate-100 space-y-2">
+                            ${msg.text ? `<div class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</div>` : ''}
+                            ${msg.mediaUrl ? `<img src="${msg.mediaUrl}" class="max-h-64 object-cover border border-[#1E293B]">` : ''}
+                        </div>
+                    </div>
+                `;
+                els.chatTranscript.appendChild(row);
+            });
+
+            els.chatTranscript.scrollTop = els.chatTranscript.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function sendMessage(text) {
+            const friend = getActiveFriend();
+            if (!friend) return;
+
+            if (!state.chats[friend.id6]) {
+                state.chats[friend.id6] = [];
+            }
+
+            const userMsg = {
+                id: 'msg_' + Date.now(),
+                senderId: state.profile.id6,
+                text: text,
+                mediaUrl: pendingMediaDataUrl,
+                timestamp: Date.now(),
+                edited: false
+            };
+
+            state.chats[friend.id6].push(userMsg);
+            saveState();
+            clearPendingAttachment();
+            renderTranscriptMessages(friend.id6);
+
+            if (friend.isOnline) {
+                setTimeout(() => {
+                    if (state.activeFriendId !== friend.id6) return;
+                    const replies = [
+                        "Packet received over Termux local relay.",
+                        "Acknowledged. Secure connection active.",
+                        "Got it! Running node diagnostic...",
+                        "Secure E2EE stream confirmed."
+                    ];
+                    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+                    const peerMsg = {
+                        id: 'msg_' + Date.now(),
+                        senderId: friend.id6,
+                        text: randomReply,
+                        mediaUrl: null,
+                        timestamp: Date.now(),
+                        edited: false
+                    };
+
+                    state.chats[friend.id6].push(peerMsg);
+                    saveState();
+                    renderTranscriptMessages(friend.id6);
+                }, 1200);
+            }
+        }
+
+        function clearPendingAttachment() {
+            pendingMediaDataUrl = null;
+            els.chatMediaInput.value = '';
+            els.attachmentPreviewImg.src = '';
+            els.attachmentPreviewBar.classList.add('hidden');
+        }
+
+        function handleAddFriend(e) {
+            e.preventDefault();
+            const id6 = els.addFriendInput.value.trim().toUpperCase();
+            if (!/^[A-Z0-9]{6}$/.test(id6)) {
+                showToast('Enter a valid 6-character alphanumeric ID', true);
+                return;
+            }
+            if (id6 === state.profile.id6) {
+                showToast('Cannot add your own ID', true);
+                return;
+            }
+            if (state.friends.some(f => f.id6 === id6)) {
+                showToast('Friend already in list', true);
+                return;
+            }
+
+            const newFriend = {
+                id6: id6,
+                username: 'Peer_' + id6.substring(0, 3),
+                accentColor: '#3B82F6',
+                bannerColor: '#1E293B',
+                avatarUrl: '',
+                bannerUrl: '',
+                isOnline: Math.random() > 0.3
+            };
+
+            state.friends.push(newFriend);
+            saveState();
+            els.addFriendInput.value = '';
+            toggleAddFriendBar(false);
+            renderFriendsList();
+            showToast(`Added friend #${id6}`);
+            selectActiveFriend(id6);
+        }
+
+        function openContextMenu(e, friendId) {
+            contextTargetFriendId = friendId;
+            els.contextMenu.style.left = `${Math.min(e.pageX, window.innerWidth - 200)}px`;
+            els.contextMenu.style.top = `${Math.min(e.pageY, window.innerHeight - 150)}px`;
+            els.contextMenu.classList.remove('hidden');
+        }
+
+        function closeContextMenu() {
+            els.contextMenu.classList.add('hidden');
+            contextTargetFriendId = null;
+        }
+
+        function removeFriend(friendId) {
+            state.friends = state.friends.filter(f => f.id6 !== friendId);
+            if (state.activeFriendId === friendId) {
+                state.activeFriendId = null;
+            }
+            saveState();
+            renderFriendsList();
+            renderActiveChat();
+            showToast('Friend removed');
+        }
+
+        function openFriendProfileModal(friendId) {
+            const friend = state.friends.find(f => f.id6 === friendId);
+            if (!friend) return;
+
+            els.fpUsername.textContent = friend.username;
+            els.fpId6.textContent = `#${friend.id6}`;
+            els.fpBanner.style.backgroundColor = friend.bannerColor || '#1E293B';
+            if (friend.bannerUrl) {
+                els.fpBanner.style.backgroundImage = `url('${friend.bannerUrl}')`;
+            } else {
+                els.fpBanner.style.backgroundImage = 'none';
+            }
+
+            if (friend.avatarUrl) {
+                els.fpAvatarImg.src = friend.avatarUrl;
+                els.fpAvatarImg.classList.remove('hidden');
+                els.fpAvatarFallback.classList.add('hidden');
+            } else {
+                els.fpAvatarImg.classList.add('hidden');
+                els.fpAvatarFallback.classList.remove('hidden');
+                els.fpAvatarFallback.textContent = friend.username.charAt(0).toUpperCase();
+            }
+
+            els.friendProfileModal.classList.remove('hidden');
+        }
+
+        function openAccountModal(isEditing = true) {
+            els.accountModalTitle.textContent = isEditing ? 'Edit Profile & Appearance' : 'Welcome to Termux Messaging';
+            els.inputUsername.value = state.profile.username;
+            els.inputId6.value = state.profile.id6;
+            els.inputAccentColor.value = state.profile.accentColor || '#3B82F6';
+            els.inputBannerColor.value = state.profile.bannerColor || '#1E293B';
+            draftAvatarUrl = state.profile.avatarUrl || '';
+            draftBannerUrl = state.profile.bannerUrl || '';
+
+            updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+            els.accountModal.classList.remove('hidden');
+        }
+
+        function closeAccountModal() {
+            els.accountModal.classList.add('hidden');
+        }
+
+        function updateModalPreview(accent, banner, avatar, bannerImg) {
+            els.previewUsername.textContent = els.inputUsername.value.trim() || 'Your Name';
+            els.previewId6.textContent = `#${els.inputId6.value.trim() || '------'}`;
+            els.previewAccentIndicator.style.backgroundColor = accent;
+            els.previewBanner.style.backgroundColor = banner;
+
+            if (bannerImg) {
+                els.previewBanner.style.backgroundImage = `url('${bannerImg}')`;
+            } else {
+                els.previewBanner.style.backgroundImage = 'none';
+            }
+
+            if (avatar) {
+                els.previewAvatarImg.src = avatar;
+                els.previewAvatarImg.classList.remove('hidden');
+                els.previewAvatarFallback.classList.add('hidden');
+            } else {
+                els.previewAvatarImg.classList.add('hidden');
+                els.previewAvatarFallback.classList.remove('hidden');
+                els.previewAvatarFallback.textContent = (els.inputUsername.value.charAt(0) || 'U').toUpperCase();
+            }
+        }
+
+        function validateAccountForm() {
+            const name = els.inputUsername.value.trim();
+            const id = els.inputId6.value.trim();
+            const isValid = name.length >= 2 && /^[A-Z0-9]{6}$/.test(id);
+            els.btnSaveAccount.disabled = !isValid;
+        }
+
+        function toggleDesktopSidebar() {
+            isSidebarCollapsed = !isSidebarCollapsed;
+            if (isSidebarCollapsed) {
+                els.contactsSidebar.classList.add('md:-translate-x-full');
+            } else {
+                els.contactsSidebar.classList.remove('md:-translate-x-full');
+            }
+            syncSidebarToggleIcon();
+        }
+
+        function toggleMobileSidebar(forceState) {
+            const isOpen = typeof forceState === 'boolean' ? forceState : els.contactsSidebar.classList.contains('-translate-x-full');
+            if (isOpen) {
+                els.contactsSidebar.classList.remove('-translate-x-full');
+                els.mobileSidebarBackdrop.classList.remove('hidden');
+            } else {
+                els.contactsSidebar.classList.add('-translate-x-full');
+                els.mobileSidebarBackdrop.classList.add('hidden');
+            }
+            syncSidebarToggleIcon();
+        }
+
+        function syncSidebarToggleIcon() {
+            if (window.innerWidth < 768) {
+                const isOpen = !els.contactsSidebar.classList.contains('-translate-x-full');
+                els.sidebarToggleIcon.textContent = isOpen ? '<' : '>';
+            } else {
+                els.sidebarToggleIcon.textContent = isSidebarCollapsed ? '>' : '<';
+            }
+        }
+
+        function toggleAddFriendBar(forceState) {
+            isAddFriendOpen = typeof forceState === 'boolean' ? forceState : !isAddFriendOpen;
+            if (isAddFriendOpen) {
+                els.addFriendWrapper.classList.remove('hidden');
+                els.addFriendInput.focus();
+            } else {
+                els.addFriendWrapper.classList.add('hidden');
+            }
+        }
+
+        function bindEvents() {
+            els.btnSidebarCollapse.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleMobileSidebar();
+                } else {
+                    toggleDesktopSidebar();
+                }
+            });
+
+            els.mobileSidebarBackdrop.addEventListener('click', () => toggleMobileSidebar(false));
+            els.btnToggleAddFriend.addEventListener('click', () => toggleAddFriendBar());
+            els.addFriendForm.addEventListener('submit', handleAddFriend);
+
+            els.btnCopyOwnId.addEventListener('click', () => {
+                if (!state.profile) return;
+                const ownId = state.profile.id6;
+                copyToClipboard(ownId, 'Copied your ID');
+
+                els.dockId6.textContent = `Copied #${ownId}!`;
+                els.dockId6.classList.add('accent-text', 'font-semibold');
+
+                setTimeout(() => {
+                    if (state.profile) els.dockId6.textContent = `#${state.profile.id6}`;
+                    els.dockId6.classList.remove('accent-text', 'font-semibold');
+                }, 1600);
+            });
+
+            els.btnDockSettings.addEventListener('click', () => openAccountModal(true));
+
+            els.headerPeerTrigger.addEventListener('click', () => {
+                if (state.activeFriendId) openFriendProfileModal(state.activeFriendId);
+            });
+
+            els.ctxCopyId.addEventListener('click', () => {
+                if (contextTargetFriendId) copyToClipboard(contextTargetFriendId, 'Copied ID');
+                closeContextMenu();
+            });
+            els.ctxViewProfile.addEventListener('click', () => {
+                if (contextTargetFriendId) openFriendProfileModal(contextTargetFriendId);
+                closeContextMenu();
+            });
+            els.ctxRemoveFriend.addEventListener('click', () => {
+                if (contextTargetFriendId) removeFriend(contextTargetFriendId);
+                closeContextMenu();
+            });
+            document.addEventListener('click', (e) => {
+                if (!els.contextMenu.contains(e.target)) closeContextMenu();
+            });
+
+            els.closeFpModal.addEventListener('click', () => els.friendProfileModal.classList.add('hidden'));
+            els.fpCloseBtn.addEventListener('click', () => els.friendProfileModal.classList.add('hidden'));
+
+            els.inputUsername.addEventListener('input', () => {
+                validateAccountForm();
+                updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+            });
+            els.inputId6.addEventListener('input', () => {
+                els.inputId6.value = els.inputId6.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                validateAccountForm();
+                updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+            });
+            els.btnRandomizeId.addEventListener('click', () => {
+                els.inputId6.value = generateRandomId6();
+                validateAccountForm();
+                updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+            });
+
+            els.inputAccentColor.addEventListener('input', (e) => {
+                updateModalPreview(e.target.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+            });
+            els.inputBannerColor.addEventListener('input', (e) => {
+                updateModalPreview(els.inputAccentColor.value, e.target.value, draftAvatarUrl, draftBannerUrl);
+            });
+
+            els.inputAvatarFile.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    draftAvatarUrl = await processUploadedImage(file, 256);
+                    updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+                }
+            });
+
+            els.inputBannerFile.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    draftBannerUrl = await processUploadedImage(file, 640);
+                    updateModalPreview(els.inputAccentColor.value, els.inputBannerColor.value, draftAvatarUrl, draftBannerUrl);
+                }
+            });
+
+            els.closeAccountModalBtn.addEventListener('click', closeAccountModal);
+
+            els.accountForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (els.btnSaveAccount.disabled) return;
+
+                state.profile = {
+                    username: els.inputUsername.value.trim(),
+                    id6: els.inputId6.value.trim().toUpperCase(),
+                    accentColor: els.inputAccentColor.value,
+                    bannerColor: els.inputBannerColor.value,
+                    avatarUrl: draftAvatarUrl,
+                    bannerUrl: draftBannerUrl
+                };
+
+                saveState();
+                renderUserDock();
+                renderFriendsList();
+                renderActiveChat();
+                closeAccountModal();
+                showToast('Profile saved successfully');
+            });
+
+            els.chatMediaInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                pendingMediaDataUrl = await processUploadedImage(file, 520);
+                if (pendingMediaDataUrl) {
+                    els.attachmentPreviewImg.src = pendingMediaDataUrl;
+                    els.attachmentPreviewBar.classList.remove('hidden');
+                }
+            });
+
+            els.btnRemoveAttachment.addEventListener('click', clearPendingAttachment);
+
+            els.messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const val = els.messageInput.value;
+                if (!val.trim() && !pendingMediaDataUrl) return;
+                els.messageInput.value = '';
+                sendMessage(val);
+            });
+        }
+
+        function init() {
+            bindEvents();
+            syncSidebarToggleIcon();
+            const hasProfile = loadState();
+            renderFriendsList();
+            renderActiveChat();
+
+            if (hasProfile) {
+                renderUserDock();
+            } else {
+                openAccountModal(false);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    })();
+</script>
